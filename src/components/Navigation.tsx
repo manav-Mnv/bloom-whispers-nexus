@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Home, 
   MessageSquare, 
@@ -10,23 +11,27 @@ import {
   BarChart3, 
   Lock,
   Menu,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 
-const navigationItems = [
-  { name: 'Home', href: '/', icon: Home, label: 'होम' },
-  { name: 'Environments', href: '/environments', icon: MessageSquare, label: 'वातावरण' },
-  { name: 'Mood Check', href: '/mood', icon: Heart, label: 'मूड चेक' },
-  { name: 'Reminders', href: '/reminders', icon: Bell, label: 'रिमाइंडर' },
-  { name: 'Journal', href: '/journal', icon: BookOpen, label: 'डायरी' },
-  { name: 'Analytics', href: '/analytics', icon: BarChart3, label: 'विश्लेषण' },
-  { name: 'Confessions', href: '/confessions', icon: Lock, label: 'गुप्त बातें' },
+const getNavigationItems = (t: (key: string) => string) => [
+  { name: t('home'), href: '/', icon: Home },
+  { name: t('environments'), href: '/environments', icon: MessageSquare },
+  { name: t('moodCheck'), href: '/mood-check', icon: Heart },
+  { name: t('reminders'), href: '/reminders', icon: Bell },
+  { name: t('journal'), href: '/journal', icon: BookOpen },
+  { name: t('analytics'), href: '/analytics', icon: BarChart3 },
+  { name: t('confessions'), href: '/confessions', icon: Lock },
 ];
 
 export function Navigation() {
+  const { language, setLanguage, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  
+  const navigationItems = getNavigationItems(t);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,24 +89,33 @@ export function Navigation() {
                       <Icon className="w-4 h-4" />
                       <span className="text-sm font-medium">{item.name}</span>
                     </div>
-                    <div className="text-xs font-devanagari opacity-70 text-center">
-                      {item.label}
-                    </div>
                   </Link>
                 );
               })}
             </div>
 
-            {/* Auth Buttons */}
+            {/* Language Toggle & Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+                className="glass flex items-center space-x-2"
+              >
+                <Globe className="w-4 h-4" />
+                <span className="text-xs font-devanagari">
+                  {language === 'en' ? 'हि' : 'EN'}
+                </span>
+              </Button>
+              
               <Link to="/login">
                 <Button variant="outline" size="sm" className="glass">
-                  Login
+                  {t('login')}
                 </Button>
               </Link>
               <Link to="/signup">
                 <Button size="sm" className="bg-gradient-wellness shadow-glow hover:shadow-strong">
-                  Sign Up
+                  {t('signUp')}
                 </Button>
               </Link>
             </div>
@@ -143,23 +157,29 @@ export function Navigation() {
                     <Icon className="w-5 h-5" />
                     <div>
                       <span className="font-medium">{item.name}</span>
-                      <div className="text-xs font-devanagari opacity-70">
-                        {item.label}
-                      </div>
                     </div>
                   </Link>
                 );
               })}
               
               <div className="pt-4 border-t border-border space-y-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
+                  className="w-full glass flex items-center justify-center space-x-2"
+                >
+                  <Globe className="w-4 h-4" />
+                  <span>Switch to {language === 'en' ? 'हिंदी' : 'English'}</span>
+                </Button>
+                
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full glass">
-                    Login
+                    {t('login')}
                   </Button>
                 </Link>
                 <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button className="w-full bg-gradient-wellness shadow-glow">
-                    Sign Up
+                    {t('signUp')}
                   </Button>
                 </Link>
               </div>
