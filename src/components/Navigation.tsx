@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { LanguageToggle } from '@/components/LanguageToggle';
 import { 
   Home, 
   MessageSquare, 
@@ -11,8 +12,7 @@ import {
   BarChart3, 
   Lock,
   Menu,
-  X,
-  Globe
+  X
 } from 'lucide-react';
 
 const getNavigationItems = (t: (key: string) => string) => [
@@ -96,17 +96,7 @@ export function Navigation() {
 
             {/* Language Toggle & Auth Buttons */}
             <div className="hidden md:flex items-center space-x-3">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-                className="glass flex items-center space-x-2"
-              >
-                <Globe className="w-4 h-4" />
-                <span className="text-xs font-devanagari">
-                  {language === 'en' ? 'हि' : 'EN'}
-                </span>
-              </Button>
+              <LanguageToggle />
               
               <Link to="/login">
                 <Button variant="outline" size="sm" className="glass">
@@ -163,14 +153,9 @@ export function Navigation() {
               })}
               
               <div className="pt-4 border-t border-border space-y-3">
-                <Button
-                  variant="outline"
-                  onClick={() => setLanguage(language === 'en' ? 'hi' : 'en')}
-                  className="w-full glass flex items-center justify-center space-x-2"
-                >
-                  <Globe className="w-4 h-4" />
-                  <span>Switch to {language === 'en' ? 'हिंदी' : 'English'}</span>
-                </Button>
+                <div className="flex justify-center">
+                  <LanguageToggle />
+                </div>
                 
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="outline" className="w-full glass">

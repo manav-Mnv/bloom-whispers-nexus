@@ -149,6 +149,25 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Future of Wellness Section */}
+        <section className="py-20 px-4">
+          <div className="container mx-auto max-w-4xl text-center">
+            <div className="animate-fade-in-up">
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                <span className="bg-gradient-wellness bg-clip-text text-transparent">
+                  {t('futureOfWellness')}
+                </span>
+              </h2>
+              <p className="text-xl font-devanagari text-primary mb-8">
+                {language === 'hi' ? 'कल्याण का भविष्य' : 'Future of Wellness'}
+              </p>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                {t('futureDesc')}
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Vision Section */}
         <section className="py-20 px-4 bg-gradient-wellness text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-black/20" />

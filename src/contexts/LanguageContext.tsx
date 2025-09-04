@@ -36,6 +36,8 @@ const translations = {
     joinThousands: 'Join thousands who have already started their journey towards better mental health and emotional wellness with BLOOM\'s AI-powered platform.',
     getStartedFree: 'Get Started Free',
     signIn: 'Sign In',
+    futureOfWellness: 'Future of Wellness',
+    futureDesc: 'Discover what\'s coming next in mental health technology',
     
     // Core Features
     mindSpaces: 'Mind Spaces',
@@ -100,6 +102,8 @@ const translations = {
     joinThousands: 'हजारों लोगों के साथ जुड़ें जो पहले से ही BLOOM के AI-संचालित प्लेटफॉर्म के साथ बेहतर मानसिक स्वास्थ्य की यात्रा शुरू कर चुके हैं।',
     getStartedFree: 'निःशुल्क शुरू करें',
     signIn: 'साइन इन',
+    futureOfWellness: 'कल्याण का भविष्य',
+    futureDesc: 'मानसिक स्वास्थ्य प्रौद्योगिकी में आगे क्या आ रहा है, जानिए',
     
     // Core Features
     mindSpaces: 'मन के स्थान',
