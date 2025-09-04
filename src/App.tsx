@@ -10,6 +10,9 @@ import Signup from "./pages/Signup";
 import Environments from "./pages/Environments";
 import MoodCheck from "./pages/MoodCheck";
 import Reminders from "./pages/Reminders";
+import Journal from "./pages/Journal";
+import Confessions from "./pages/Confessions";
+import Analytics from "./pages/Analytics";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
             <Route path="/environments" element={<Environments />} />
             <Route path="/mood-check" element={<MoodCheck />} />
             <Route path="/reminders" element={<Reminders />} />
+            <Route path="/journal" element={<Journal />} />
+            <Route path="/confessions" element={<Confessions />} />
+            <Route path="/analytics" element={<Analytics />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
