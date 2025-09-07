@@ -1,9 +1,14 @@
-# main.py
+from dotenv import load_dotenv
+load_dotenv()
+
 import os
 import shutil
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
-from typing import Optional
+
+from mongo_db import add_user, get_user_by_username  # MongoDB helper functions
+from redis_client import set_streak, get_streak     # Redis helper functions
+
 from models.hf_models import (
     get_dialogpt_medium_response,
     get_dialogpt_large_response,
@@ -34,11 +39,9 @@ class TextAnalysisRequest(BaseModel):
 class ConfessionRequest(BaseModel):
     confession_text: str
 
+# Chat endpoints
 @app.post("/chat/text")
 async def text_chat(request: ChatRequest):
-    """
-    Text-based chat endpoint using different AI models based on chat_type.
-    """
     if request.chat_type == "study_buddy":
         response = get_dialogpt_medium_response(request.prompt)
     elif request.chat_type == "advisor":
@@ -51,20 +54,13 @@ async def text_chat(request: ChatRequest):
 
 @app.post("/chat/voice")
 async def voice_chat(audio_file: UploadFile = File(...)):
-    """
-    Voice chat endpoint: accepts audio file, transcribes it, and generates AI response.
-    """
     file_location = f"temp_{audio_file.filename}"
     try:
         with open(file_location, "wb") as file_object:
             shutil.copyfileobj(audio_file.file, file_object)
 
         transcribed_text = transcribe_audio(file_location)
-
-        # Example: use general blenderbot for response
         ai_response = get_blenderbot_response(transcribed_text)
-
-        # Optionally, extract audio features (placeholder)
         audio_features = process_audio_features(file_location)
 
         return {
@@ -78,11 +74,9 @@ async def voice_chat(audio_file: UploadFile = File(...)):
         if os.path.exists(file_location):
             os.remove(file_location)
 
+# Mood analysis endpoint
 @app.post("/mood/check")
 async def mood_check(request: TextAnalysisRequest):
-    """
-    Analyze mood from text input using two emotion detection models.
-    """
     emotion_jhartmann = detect_emotion_jhartmann(request.text)
     emotion_samlowe = detect_emotion_samlowe(request.text)
     return {
@@ -90,17 +84,15 @@ async def mood_check(request: TextAnalysisRequest):
         "sam_lowe_emotion": emotion_samlowe
     }
 
+# Confession submission endpoint
 @app.post("/confession/submit")
 async def submit_confession(request: ConfessionRequest):
-    """
-    Submit a confession, perform content moderation, emotion analysis, and generate AI response.
-    """
     toxicity_bert = detect_toxicity_toxicbert(request.confession_text)
     toxicity_martin_ha = detect_toxicity_martin_ha(request.confession_text)
     confession_emotion = detect_emotion_twitter_roberta(request.confession_text)
 
     ai_response = get_blenderbot_response(
-        f"User  confessed: {request.confession_text}. Provide a supportive response."
+        f"User confessed: {request.confession_text}. Provide a supportive response."
     )
 
     return {
@@ -112,11 +104,9 @@ async def submit_confession(request: ConfessionRequest):
         "ai_response": ai_response
     }
 
+# Text analytics endpoint
 @app.post("/analytics/text-patterns")
 async def analyze_text_patterns(request: TextAnalysisRequest):
-    """
-    Analyze text for mood and behavioral patterns (demo with single text).
-    """
     jhartmann_analysis = detect_emotion_jhartmann(request.text)
     samlowe_analysis = detect_emotion_samlowe(request.text)
 
@@ -126,5 +116,22 @@ async def analyze_text_patterns(request: TextAnalysisRequest):
         "insights": "Further analysis requires historical data and trend detection."
     }
 
-# To run this app:
-# uvicorn main:app --reload --host 0.0.0.0 --port 8000
+# MongoDB user endpoints
+@app.post("/users/")
+async def create_user(user: dict):
+    existing_user = await get_user_by_username(user.get("username"))
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already exists")
+    user_id = await add_user(user)
+    return {"user_id": user_id}
+
+# Redis streak endpoints
+@app.post("/streak/{user_id}")
+def update_streak(user_id: str, count: int):
+    set_streak(user_id, count)
+    return {"message": f"Streak updated to {count}"}
+
+@app.get("/streak/{user_id}")
+def read_streak(user_id: str):
+    streak = get_streak(user_id)
+    return {"user_id": user_id, "streak": streak}
