@@ -6,7 +6,7 @@ import shutil
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
 
-from mongo_db import add_user, get_user_by_username  # MongoDB helper functions
+from backend.supabase_client import sign_up_user, sign_in_user, sign_out_user, get_current_user  # Supabase Auth functions
 from redis_client import set_streak, get_streak     # Redis helper functions
 
 from models.hf_models import (
@@ -116,22 +116,54 @@ async def analyze_text_patterns(request: TextAnalysisRequest):
         "insights": "Further analysis requires historical data and trend detection."
     }
 
-# MongoDB user endpoints
-@app.post("/users/")
-async def create_user(user: dict):
-    existing_user = await get_user_by_username(user.get("username"))
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Username already exists")
-    user_id = await add_user(user)
-    return {"user_id": user_id}
+# Supabase Auth endpoints
+@app.post("/auth/signup")
+async def signup(user: dict):
+    email = user.get("email")
+    password = user.get("password")
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    try:
+        response = await sign_up_user(email, password)
+        return {"message": "User signed up", "data": response}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/auth/signin")
+async def signin(user: dict):
+    email = user.get("email")
+    password = user.get("password")
+    if not email or not password:
+        raise HTTPException(status_code=400, detail="Email and password required")
+    try:
+        response = await sign_in_user(email, password)
+        return {"message": "User signed in", "data": response}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.post("/auth/signout")
+async def signout():
+    try:
+        response = await sign_out_user()
+        return {"message": "User signed out", "data": response}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@app.get("/auth/user")
+async def get_user():
+    try:
+        user = await get_current_user()
+        return {"user": user}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 # Redis streak endpoints
 @app.post("/streak/{user_id}")
-def update_streak(user_id: str, count: int):
-    set_streak(user_id, count)
+async def update_streak(user_id: str, count: int):
+    await set_streak(user_id, count)
     return {"message": f"Streak updated to {count}"}
 
 @app.get("/streak/{user_id}")
-def read_streak(user_id: str):
-    streak = get_streak(user_id)
+async def read_streak(user_id: str):
+    streak = await get_streak(user_id)
     return {"user_id": user_id, "streak": streak}
