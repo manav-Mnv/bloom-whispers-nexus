@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/store/hooks';
 import { 
   MessageCircle,
   Shield,

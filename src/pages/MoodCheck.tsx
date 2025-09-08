@@ -4,7 +4,7 @@ import { HeroBackground } from '@/components/HeroBackground';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/store/hooks';
 import { 
   Heart,
   Sparkles,

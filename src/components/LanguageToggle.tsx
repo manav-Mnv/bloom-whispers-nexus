@@ -1,4 +1,4 @@
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/store/hooks';
 
 export function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
